@@ -1,55 +1,52 @@
 class Planet {
-  float radius; 
-  float angle;
+  float radius;
   float distance;
   Planet[] planets;
-  float orbitSpeed;
-  
+  float angle;
+  float orbitspeed;
+
   Planet(float r, float d, float o) {
     radius = r;
     distance = d;
     angle = random(TWO_PI);
-    orbitSpeed = o;
+    orbitspeed = o;
+    //println(angle);
   }
 
-void orbit() {
-    angle = angle + orbitSpeed;
+  void orbit() {
+    angle = angle + orbitspeed;
     if (planets != null) {
-    for (int i = 0; i < planets.length; i++) {
-      planets[i].orbit();
-      }  
+      for (int i = 0; i < planets.length; i++) {
+        planets[i].orbit();
+      }
     }
-}
+  }
 
+  void spawnMoons(int total, int level) {
+    planets = new Planet[total];
+    for (int i = 0; i < planets.length; i++) {
+      float r = radius/(level*2);
+      float d = random(50, 150);
+      float o = random(-0.1, 0.1);
+      planets[i] = new Planet(r, d/level, o);
+      if (level < 2) {
+        int num = int(random(0,4));
+        planets[i].spawnMoons(num, level+1);
+      }
+    }
+  }
 
-
-
-void spawnMoons (int total) {
- planets = new Planet[total];
- for (int i = 0; i < planets.length; i++) {
-   float r = radius*0.5;
-   float d = random (75,300);
-   float o = random(0.1, 0.2)
-   planets[i] = new Planet(r, d);
- }
-  
-}
-
-
-
-
-void show() {
-  pushMatrix();
-  translate(distance, 0);
-  rotate(angle);
-  translate(distance, 0);
-  fill(255, 100);
-  ellipse(0,0, radius*2, radius*2);
-  if (planets != null) {
-  for (int i = 0; i < planets.length; i++) {
-    planets[i].show();
-      }  
+  void show() {
+    pushMatrix();
+    fill(255, 100);
+    rotate(angle);
+    translate(distance, 0);
+    ellipse(0, 0, radius*2, radius*2);
+    if (planets != null) {
+      for (int i = 0; i < planets.length; i++) {
+        planets[i].show();
+      }
     }
     popMatrix();
   }
- }
+}

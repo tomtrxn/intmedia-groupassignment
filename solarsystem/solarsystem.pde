@@ -1,9 +1,9 @@
 Planet sun;
 
 void setup() {
-  size(600,600);
-  sun = new Planet(50, 0, 0); 
-  sun.spawnMoons(5);
+  size(600, 600);
+  sun = new Planet(50, 0, 0);
+  sun.spawnMoons(3, 1);
 }
 
 void draw() {
