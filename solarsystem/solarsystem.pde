@@ -1,6 +1,4 @@
-//still to do:
-//integrate a background change somehow
-//assign the correct images to their respective labelled planet
+
 
 
 import peasy.*;
@@ -11,9 +9,23 @@ PeasyCam cam;
 
 PImage b11Texture;
 PImage[] textures = new PImage[3];
+float angle;
+PVector p;
+PImage img;
+PShape globe;
 
 void setup() {
-  size(600, 600, P3D);
+  fullScreen(P3D);
+  angle=0;
+  
+  p = new PVector(1, 0, 1);
+  
+  noStroke();
+  img = loadImage("galaxy.jpg");
+  globe = createShape(SPHERE, 3000);
+  globe.setTexture(img);
+  
+  
   b11Texture = loadImage("images/building11.jpg");
   textures[0] = loadImage("images/lights.jpg");
   textures[1] = loadImage("images/spark.jpg");
