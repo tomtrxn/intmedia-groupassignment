@@ -1,4 +1,6 @@
 import peasy.*;
+import processing.sound.*;
+import ddf.minim.*;
 
 Planet sun;
 PeasyCam cam;
@@ -12,6 +14,15 @@ float angle;
 PVector p;
 PImage img;
 PShape globe;
+
+// Audio
+Minim minim;
+AudioPlayer goodStatusSound;
+AudioPlayer warningStatusSound;
+AudioPlayer emergencyStatusSound;
+
+// try int or string for status input
+String solarSystemStatus = "Good"; // initial status
 
 void setup() {
   fullScreen(P3D);
@@ -33,6 +44,17 @@ void setup() {
   cam = new PeasyCam(this, 500);
   sun = new Planet(50, 0, 0, sunTexture);
   sun.spawnMoons(4, 1);
+
+
+// initialize the audio here
+minim = new Minim(this);
+goodStatusSound = minim.loadFile("good_status.mp3");
+warningStatusSound = minim.loadFile("warning_status.mp3");
+emergencyStatusSound = minim.loadFile("emergency_status.mp3");
+
+// base status is "good"
+playGoodStatusSound();
+
 }
 
 void draw() {
@@ -60,5 +82,46 @@ void draw() {
 
   sun.show();
   sun.orbit();
-  
+ 
+  // Check and update the solar system status
+  if (frameCount % 600 == 0) // change the framecount to population variable
+  { 
+    // status changes randomly between good, warning and emergency
+    // add parameter so the changes happen according to population data
+    String[] statusOptions = {"Good", "Warning", "Emergency"};
+    int newIndex = int(random(statusOptions.length));
+    solarSystemStatus = statusOptions[newIndex];
+    
+    // loop to play the corresponding audio files
+    if (solarSystemStatus.equals("Good")) 
+    {
+      playGoodStatusSound();
+    }
+    else if (solarSystemStatus.equals("Warning"))
+    {
+      playWarningStatusSound();
+    }
+    else if (solarSystemStatus.equals("Emergency"))
+    {
+      playEmergencyStatusSound();
+    }
+  }
 }
+
+void playGoodStatusSound() 
+{
+  goodStatusSound.rewind();
+  goodStatusSound.play();
+}
+
+ void playWarningStatusSound() 
+{
+  warningStatusSound.rewind();
+  warningStatusSound.play();
+}
+  void playEmergencyStatusSound() 
+{
+  emergencyStatusSound.rewind();
+  emergencyStatusSound.play();
+}
+ 
