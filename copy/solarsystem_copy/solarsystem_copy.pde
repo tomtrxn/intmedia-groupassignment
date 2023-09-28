@@ -1,5 +1,7 @@
 import peasy.*;
 import java.util.HashMap;
+import processing.sound.*;
+import ddf.minim.*;
 
 Planet sun;
 PeasyCam cam;
@@ -16,6 +18,18 @@ PShape globe;
 
 HashMap<Integer, Float> powerUsage = new HashMap<Integer, Float>();
 int selectedDateIndex = 0;
+// Audio
+Minim minim;
+AudioPlayer goodStatusSound;
+AudioPlayer warningStatusSound;
+AudioPlayer emergencyStatusSound;
+
+String[] statusOptions = {"Good", "Warning", "Emergency"};
+
+int populationIndex = 0; // track the population
+
+// try int or string for status input
+String solarSystemStatus = "Good"; // initial status
 
 void setup() {
   fullScreen(P3D);
@@ -44,6 +58,19 @@ Table table = loadTable("data/powerdata.csv", "header");
     float usage = row.getFloat(1);  // Power usage is in the second column
     powerUsage.put(dayNumber, usage);
   }
+  sun = new Planet(50, 0, 0, sunTexture);
+  sun.spawnMoons(4, 1);
+
+
+// initialize the audio here
+minim = new Minim(this);
+goodStatusSound = minim.loadFile("good_status.mp3");
+warningStatusSound = minim.loadFile("warning_status.mp3");
+emergencyStatusSound = minim.loadFile("emergency_status.mp3");
+
+// base status is "good"
+playGoodStatusSound();
+
 }
 
 
@@ -76,7 +103,31 @@ pointLight(brightness, brightness, brightness, 0, 0, 0);
 
   sun.show();
   sun.orbit();
-  
+ 
+  // Check and update the solar system status
+  if (frameCount % 600 == 0) // change the framecount to population variable
+  { 
+    // status changes randomly between good, warning and emergency
+    // add parameter so the changes happen according to population data
+    //String[] statusOptions = {"Good", "Warning", "Emergency"};
+    
+    solarSystemStatus = statusOptions[newIndex];
+    populationIndex = (populationIndex + 1) % statusOptions.length; // options cycle through
+    
+    // loop to play the corresponding audio files
+    if (solarSystemStatus.equals("Good")) 
+    {
+      playGoodStatusSound();
+    }
+    else if (solarSystemStatus.equals("Warning"))
+    {
+      playWarningStatusSound();
+    }
+    else if (solarSystemStatus.equals("Emergency"))
+    {
+      playEmergencyStatusSound();
+    }
+  }
 }
 
 void keyPressed() {
@@ -86,3 +137,20 @@ void keyPressed() {
     selectedDateIndex = 10;
   }
 }
+void playGoodStatusSound() 
+{
+  goodStatusSound.rewind();
+  goodStatusSound.play();
+}
+
+ void playWarningStatusSound() 
+{
+  warningStatusSound.rewind();
+  warningStatusSound.play();
+}
+  void playEmergencyStatusSound() 
+{
+  emergencyStatusSound.rewind();
+  emergencyStatusSound.play();
+}
+ 
