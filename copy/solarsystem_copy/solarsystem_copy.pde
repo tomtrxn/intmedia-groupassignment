@@ -24,8 +24,8 @@ void setup() {
   globe = createShape(SPHERE, 3000);
   globe.setTexture(img);
 
-
-  sunTexture = loadImage("data/building11.jpg");
+//images must be 1024/512 for it to render
+  sunTexture = loadImage("images/building11.jpg");
   textures[0] = loadImage("planets/mars.jpg");
   textures[1] = loadImage("planets/earth.jpg");
   textures[2] = loadImage("planets/mercury.jpg");
