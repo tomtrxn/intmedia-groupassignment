@@ -1,75 +1,87 @@
 class Planet {
   float radius;
-  float angle;
   float distance;
   Planet[] planets;
-  float orbitSpeed;
+  float angle;
+  float orbitspeed;
+  String label;
   PVector v;
 
   PShape globe;
 
-  Planet(float r, float d, float o, PImage img) {
+  Planet(float r, float d, float o, String lbl, PImage img) {
     v = PVector.random3D();
-
+    
     radius = r;
     distance = d;
     v.mult(distance);
-
     angle = random(TWO_PI);
-    orbitSpeed = o;
-
+    orbitspeed = o;
+    label =lbl;
+    
     noStroke();
-    noFill();
-    globe = createShape(SPHERE, radius);
+    noFill(); 
+    globe = createShape(SPHERE, radius); 
     globe.setTexture(img);
-  }
-
-  void spawnMoons(int total, int level) {
-    planets = new Planet[total];
-    for (int i=0; i<planets.length; i++) {
-      float r = radius/(level*2);
-      float d = random((radius+r), (radius+r)*5);
-      float o = random(-0.01, 0.01);
-
-      int index = int(random(0, textures.length));
-      planets[i] = new Planet(r, d, o, textures[index]);
-      if (level < 2) {
-        int num = int(random(0, 2));
-        planets[i].spawnMoons(num, level+1);
-      }
-    }
+    
   }
 
   void orbit() {
-    angle += orbitSpeed;
+    angle = angle + orbitspeed;
     if (planets != null) {
-      for (int i=0; i<planets.length; i++) {
+      for (int i = 0; i < planets.length; i++) {
         planets[i].orbit();
       }
     }
   }
 
+  void spawnMoons(int total, int level, String[] labels, PImage[] textures) {
+    planets = new Planet[total];
+    
+    if (level == 1) {
+        labels = new String[]{"Oxygen", "Population", "Electricity"};
+    }
+
+    for (int i = 0; i < planets.length; i++) {
+        float r = radius/(level*2);
+        float d = random((radius + r), (radius+r)*2);
+        float o = random(-0.04, 0.04);
+        
+        String lbl = (labels != null && i < labels.length) ? labels[i] : "";
+        planets[i] = new Planet(r, d, o, lbl, textures[i]);
+
+        if (level < 2) {
+            int num = int(random(0,3));
+            planets[i].spawnMoons(num, level+1, new String[]{}, textures);
+        }
+    }
+}
+
+
   void show() {
     pushMatrix();
     noStroke();
-
-    PVector v2 = new PVector(1, 0, 1);
+    PVector v2 = new PVector(1,0,1);
     PVector p = v.cross(v2);
     rotate(angle, p.x, p.y, p.z);
-
     stroke(255);
-    // line(0, 0, 0, v.x*10, v.y*10, v.z*10);
-    // line(0, 0, 0, p.x*10, p.y*10, p.z*10);
-
-
+    //line(0,0,0, v.x, v.y, v.z);
+  
     translate(v.x, v.y, v.z);
-    noStroke();
+    noStroke(); 
     fill(255);
-
     shape(globe);
-
+    //if(distance==0) {
+      //pointLight(255, 255, 255, 0, 0, 0);
+    //}
+      
+    //sphere(radius);     
+  
+    fill(255);
+    text(label, 0, 0 - radius - 10);
+    
     if (planets != null) {
-      for (int i=0; i<planets.length; i++) {
+      for (int i = 0; i < planets.length; i++) {
         planets[i].show();
       }
     }
