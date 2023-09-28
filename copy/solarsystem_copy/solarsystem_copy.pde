@@ -21,6 +21,10 @@ AudioPlayer goodStatusSound;
 AudioPlayer warningStatusSound;
 AudioPlayer emergencyStatusSound;
 
+String[] statusOptions = {"Good", "Warning", "Emergency"};
+
+int populationIndex = 0; // track the population
+
 // try int or string for status input
 String solarSystemStatus = "Good"; // initial status
 
@@ -88,9 +92,10 @@ void draw() {
   { 
     // status changes randomly between good, warning and emergency
     // add parameter so the changes happen according to population data
-    String[] statusOptions = {"Good", "Warning", "Emergency"};
-    int newIndex = int(random(statusOptions.length));
+    //String[] statusOptions = {"Good", "Warning", "Emergency"};
+    
     solarSystemStatus = statusOptions[newIndex];
+    populationIndex = (populationIndex + 1) % statusOptions.length; // options cycle through
     
     // loop to play the corresponding audio files
     if (solarSystemStatus.equals("Good")) 
