@@ -9,6 +9,7 @@ class Planet {
 
   PShape globe;
 
+ 
   Planet(float r, float d, float o, String lbl, PImage img) {
     v = PVector.random3D();
     
@@ -22,8 +23,10 @@ class Planet {
     noStroke();
     noFill(); 
     globe = createShape(SPHERE, radius); 
-    globe.setTexture(img);
-    
+    if (img != null) {
+      globe.setTexture(img);
+    }
+
   }
 
   void orbit() {
@@ -46,17 +49,24 @@ class Planet {
         float r = radius/(level*2);
         float d = random((radius + r), (radius+r)*2);
         float o = random(-0.04, 0.04);
-        
         String lbl = (labels != null && i < labels.length) ? labels[i] : "";
-        planets[i] = new Planet(r, d, o, lbl, textures[i]);
-
+        planets[i] = new Planet(r, d, o, lbl, textures[i % textures.length]);
         if (level < 2) {
             int num = int(random(0,3));
             planets[i].spawnMoons(num, level+1, new String[]{}, textures);
         }
     }
+  }
+
+void updateOrbitSpeed(float speed, float scalingFactor) {
+  orbitspeed = speed * scalingFactor;
 }
 
+void updateSize(float newRadius) {
+    radius = newRadius;
+    globe = createShape(SPHERE, radius);  // Update the globe shape with the new radius
+    globe.setTexture(img);
+}
 
   void show() {
     pushMatrix();
