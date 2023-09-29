@@ -37,6 +37,17 @@ int populationIndex = 0; // track the population
 // try int or string for status input
 String solarSystemStatus = "Good"; // initial status
 
+// background
+int currentRow = 1; 
+String currentDate = ""; 
+String selectedDay;
+boolean pressKey = false;
+Table firstTable;
+Table secondTable;
+int index = 0;
+
+
+
 void setup() {
   size(600, 600, P3D);
   angle=0;
@@ -44,7 +55,7 @@ void setup() {
   p = new PVector(1, 0, 1);
 
   noStroke();
-  img = loadImage("blenderBG/bg_R1.png");
+  img = loadImage("blenderBG/navy02.png");
   globe = createShape(SPHERE, 3000);
   globe.setTexture(img);
 
@@ -91,6 +102,9 @@ playGoodStatusSound();
 
 }
 */
+
+// backgorund
+firstTable = loadTable ("Air Temperature.csv", "header");
 }
 
 void draw() {
@@ -158,13 +172,72 @@ void draw() {
 }
 */
 
+// background
+  if(pressKey){
+  updateTable();
+  }
+  
+  if(secondTable != null){
+  if (index < secondTable.getRowCount()) {
+    float temperature = secondTable.getFloat(index, 1);
+    index++;
+    //println("index:>>" + index + "____" + "temperature:>>"+ temperature);
+    
+    if (temperature >= 5.33) {
+      img = loadImage("blenderBG/bg_00.png");
+      globe.setTexture(img);
+    } else if (temperature <= 5.32 && temperature >= 5) {
+      img = loadImage("blenderBG/bg_01.png");
+      globe.setTexture(img);
+    } else if (temperature <= 4.99 && temperature >= 4.96) {
+      img = loadImage("blenderBG/bg_02.png");
+      globe.setTexture(img);
+    } else if (temperature <= 4.95 && temperature >= 4.93) {
+      img = loadImage("blenderBG/bg_03.png");
+      globe.setTexture(img);
+    } else if (temperature <= 4.92) {
+      img = loadImage("blenderBG/bg_04.png");
+      globe.setTexture(img);
+    } 
+  }
+  }else{
+    if (index < firstTable.getRowCount()) {
+    float temperature = firstTable.getFloat(index, 1);
+    index++;
+    //println("index:>>" + index + "____" + "temperature:>>"+ temperature);
+    
+    if (temperature >= 5.33) {
+      img = loadImage("blenderBG/navy00.png");
+      globe.setTexture(img);
+    } else if (temperature <= 5.32 && temperature >= 5) {
+      img = loadImage("blenderBG/navy01.png");
+      globe.setTexture(img);
+    } else if (temperature <= 4.99 && temperature >= 4.96) {
+      img = loadImage("blenderBG/navy03.png");
+      globe.setTexture(img);
+    } else if (temperature <= 4.95 && temperature >= 4.93) {
+      img = loadImage("blenderBG/navy04.png");
+      globe.setTexture(img);
+    } else if (temperature <= 4.92) {
+      img = loadImage("blenderBG/navy05.png");
+      globe.setTexture(img);
+    } 
+  }
+  }
 }
+
+
 void keyPressed() {
   if (key >= '1' && key <= '9') {
     selectedDateIndex = key - '1' + 1;
+    selectedDay = "0" + key;
+    index = 0;
   } else if (key == '0') {
     selectedDateIndex = 10;
+    selectedDay = "10";
+    index = 0;
   }
+  pressKey=true;
 
   float oxyValue = oxyData.get(selectedDateIndex);
   float powerValue = powerData.get(selectedDateIndex);
@@ -191,3 +264,29 @@ void playGoodStatusSound()
   emergencyStatusSound.play();
 }
 */
+
+// backgournd 
+void updateTable() {
+    secondTable = new Table();
+    for (String columnName : firstTable.getColumnTitles()) {
+      secondTable.addColumn(columnName);
+    }
+
+    for (TableRow sourceRow : firstTable.rows()) {
+      String date = sourceRow.getString("2023-09-01 13:25:02");
+      String day = date.substring(8, 10); 
+
+      
+      if (day.equals(selectedDay)) {
+        //println(int(day) + "____" + int(selectedDay));
+        TableRow newRow = secondTable.addRow();
+
+        
+        for (String columnName : firstTable.getColumnTitles()) {
+          newRow.setString(columnName, sourceRow.getString(columnName));
+        }
+      }
+    }
+
+    pressKey=false;
+}
