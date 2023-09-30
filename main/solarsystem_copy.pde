@@ -199,9 +199,10 @@ void draw() {
 }
 
 // press a number first before pressing a to check the status 
-// pressing 2 has good status
-// pressing 6 has warning status
+// pressing 0 has good status
+// pressing 9 has warning status
 // pressing 1 has emergency status
+// 1-0 corresponds to dates with population
 
 void keyPressed() {
   if (key == 'A' || key == 'a') {
