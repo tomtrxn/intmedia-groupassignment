@@ -52,6 +52,10 @@ void setup() {
   size(600, 600, P3D);
   angle=0;
 
+  // backgorund
+  firstTable = loadTable ("Air Temperature.csv", "header");
+  secondTable = null;
+
   p = new PVector(1, 0, 1);
 
   noStroke();
@@ -67,7 +71,15 @@ void setup() {
   cam = new PeasyCam(this, 500);
   sun = new Planet(50, 0, 0, "B11", sunTexture);
   sun.spawnMoons(3, 1, new String[] {"Oxygen", "Population", "Electricity"}, textures);
+  
+  // initialize the audio here
+  minim = new Minim(this);
+  goodStatusSound = minim.loadFile("good_status.mp3");
+  warningStatusSound = minim.loadFile("warning_status.mp3");
+  emergencyStatusSound = minim.loadFile("emergency_status.mp3");
 
+// base status is "good"
+//playGoodStatusSound();
 
  Table oxyTable = loadTable("data/oxydata.csv", "header");
   for (TableRow row : oxyTable.rows()) {
@@ -89,23 +101,9 @@ void setup() {
     float value = row.getFloat(1);
     popData.put(dayNumber, value);
   }
- 
-/*
-// initialize the audio here
-minim = new Minim(this);
-goodStatusSound = minim.loadFile("good_status.mp3");
-warningStatusSound = minim.loadFile("warning_status.mp3");
-emergencyStatusSound = minim.loadFile("emergency_status.mp3");
-
-// base status is "good"
-playGoodStatusSound();
 
 }
-*/
 
-// backgorund
-firstTable = loadTable ("Air Temperature.csv", "header");
-}
 
 void draw() {
 
@@ -142,35 +140,6 @@ void draw() {
   }
   sun.show();
   sun.orbit();
- 
-  
-  /*
-  // Check and update the solar system status
-  if (frameCount % 600 == 0) // change the framecount to population variable
-  { 
-    // status changes randomly between good, warning and emergency
-    // add parameter so the changes happen according to population data
-    //String[] statusOptions = {"Good", "Warning", "Emergency"};
-    
-    //solarSystemStatus = statusOptions[populationIndex];
-    //populationIndex = (populationIndex + 1) % statusOptions.length; // options cycle through
-    
-    // loop to play the corresponding audio files
-    if (solarSystemStatus.equals("Good")) 
-    {
-      playGoodStatusSound();
-    }
-    else if (solarSystemStatus.equals("Warning"))
-    {
-      playWarningStatusSound();
-    }
-    else if (solarSystemStatus.equals("Emergency"))
-    {
-      playEmergencyStatusSound();
-    }
-  }
-}
-*/
 
 // background
   if(pressKey){
@@ -200,7 +169,9 @@ void draw() {
       globe.setTexture(img);
     } 
   }
-  }else{
+
+  else 
+  {
     if (index < firstTable.getRowCount()) {
     float temperature = firstTable.getFloat(index, 1);
     index++;
@@ -225,10 +196,28 @@ void draw() {
   }
   }
 }
+}
 
-
+// press a number first before pressing a to check the status 
 void keyPressed() {
-  if (key >= '1' && key <= '9') {
+  if (key == 'A' || key == 'a') {
+    // Play good status sound
+    if (popData.containsKey(selectedDateIndex)) {
+      float population = popData.get(selectedDateIndex);
+      if (population < 5) {
+        playGoodStatusSound();
+        solarSystemStatus = "Good";
+      } else if (population > 5) {
+        playWarningStatusSound();
+        solarSystemStatus = "Warning";
+      } else if (population > 9) {
+        playEmergencyStatusSound();
+        solarSystemStatus = "Emergency";
+      }
+    } else {
+      println("No population data found for selected date index; " + selectedDateIndex);
+    }
+  } else if (key >= '1' && key <= '9') {
     selectedDateIndex = key - '1' + 1;
     selectedDay = "0" + key;
     index = 0;
@@ -237,7 +226,7 @@ void keyPressed() {
     selectedDay = "10";
     index = 0;
   }
-  pressKey=true;
+  pressKey = true;
 
   float oxyValue = oxyData.get(selectedDateIndex);
   float powerValue = powerData.get(selectedDateIndex);
@@ -246,7 +235,8 @@ void keyPressed() {
   sun.planets[1].updateSize(popValue);
   sun.planets[2].updateSize(powerValue);
 }
-/*
+
+// call to play the audio
 void playGoodStatusSound() 
 {
   goodStatusSound.rewind();
@@ -263,7 +253,7 @@ void playGoodStatusSound()
   emergencyStatusSound.rewind();
   emergencyStatusSound.play();
 }
-*/
+
 
 // backgournd 
 void updateTable() {
@@ -290,4 +280,3 @@ void updateTable() {
 
     pressKey=false;
 }
-//for fresh commit
