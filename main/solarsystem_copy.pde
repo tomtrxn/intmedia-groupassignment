@@ -199,18 +199,22 @@ void draw() {
 }
 
 // press a number first before pressing a to check the status 
+// pressing 2 has good status
+// pressing 6 has warning status
+// pressing 1 has emergency status
+
 void keyPressed() {
   if (key == 'A' || key == 'a') {
     // Play good status sound
     if (popData.containsKey(selectedDateIndex)) {
       float population = popData.get(selectedDateIndex);
-      if (population < 5) {
+      if (population < 3) {
         playGoodStatusSound();
         solarSystemStatus = "Good";
-      } else if (population > 5) {
+      } else if (population >= 3 && population < 10) {
         playWarningStatusSound();
         solarSystemStatus = "Warning";
-      } else if (population > 9) {
+      } else if (population >= 10) {
         playEmergencyStatusSound();
         solarSystemStatus = "Emergency";
       }
